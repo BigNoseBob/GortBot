@@ -5,7 +5,7 @@
 // Gort v0.2.0
 
 const DiscordJS = require('discord.js')
-const fs = require('node:fs')
+const fs = require('fs')
 
 async function login({ FLAGS }) {
     

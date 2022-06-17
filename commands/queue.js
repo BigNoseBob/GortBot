@@ -25,7 +25,7 @@ module.exports = {
         const channel = interaction.member.voice.channel
         if (!channel) return { content: 'bruh' }
 
-        [queue, player] = client.audioconnections.get(channel.guild.id)
+        [player, queue] = client.audioconnections.get(channel.guild.id)
         if (queue.length === 0) {
             interaction.reply('The queue is currently **empty**.')
             return

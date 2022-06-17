@@ -3,25 +3,14 @@
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createAudioResource, AudioPlayer, AudioPlayerStatus } = require('@discordjs/voice')
+
 const ytdl = require('ytdl-core')
+const youtubedl = require('youtube-dl-exec')
+
 const { MessageEmbed } = require('discord.js')
 const { search } = require('../search_youtube.js')
 const { playlist, request_authorization } = require('../spotify.js')
 
-
-function make_embed(data, url) {
-
-    let title = data.snippet.title.replaceAll('&#39;', "'")
-    let img_url = data.snippet.thumbnails.default.url
-
-    const embed = new MessageEmbed()
-        .setColor('#D22B2B')
-        .setTitle(title)
-        .setThumbnail(img_url)
-        .setDescription(url)
-    return embed
-
-}
 
 function *enumerate(array) {
     for (let i = 0; i < array.length; i++){
@@ -44,7 +33,10 @@ module.exports = {
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
         const query = interaction.options._hoistedOptions[0].value
-        if (!channel) return { content: 'bruh' }
+        if (!channel) {
+            interaction.reply('**404** Channel not found.')
+            return
+        }
 
         let to_queue = [query]
         let is_playlist = false
@@ -76,7 +68,7 @@ module.exports = {
         if (!res) {
             await require('./join.js').execute({ interaction, client, noreply: true });
         }
-        [player, queue] = client.audioconnections.get(channel.guild.id)
+        [player, queue, nowplaying] = client.audioconnections.get(channel.guild.id)
 
         async function enqueue({ query, immediate }) {
 
@@ -88,11 +80,22 @@ module.exports = {
             
                 if (queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) {
             
-                    let stream = await ytdl(url, {
-                        filter: 'audioonly',
-                        quality: 'highestaudio',
-                    })
+                    // let stream = await ytdl(url, {
+                    //     filter: format => format.itag == 251,
+                    //     highWaterMark: 40000,
+                    // })
+
+                    let stream = await youtubedl.exec(url, {
+                        o: '-',
+                        q: '',
+                        f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+                        r: '100k',
+                    }, {
+                        stdio: ['ignore', 'pipe', 'ignore']
+                    }).stdout
+
                     let resource = createAudioResource(stream)
+
                     player.play(resource)
             
                 } else {
