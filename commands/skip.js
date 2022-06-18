@@ -3,7 +3,7 @@
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createAudioResource, AudioPlayerStatus } = require('@discordjs/voice')
-const ytdl = require('ytdl-core')
+const youtubedl = require('youtube-dl-exec')
 const { search } = require('../search_youtube.js')
 
 module.exports = {
@@ -31,11 +31,18 @@ module.exports = {
             }
 
             let url = `https://www.youtube.com/watch?v=${upnext.id.videoId}`
-            let stream = await ytdl(url, {
-                filter: 'audioonly',
-                quality: 'highestaudio',
+            let stream = await youtubedl.exec(url, {
+                o: '-',
+                q: '',
+                f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+                r: '100k',
+            }, {
+                stdio: ['ignore', 'pipe', 'ignore']
+            }).stdout
+
+            let resource = createAudioResource(stream, {
+                metadata: upnext
             })
-            let resource = createAudioResource(stream)
             player.play(resource)
 
             await interaction.reply({ content: ':fast_forward: Skipping...' })

@@ -51,15 +51,11 @@ module.exports = {
                     if (data.items.length === 0) throw new Error('No videos found')
                     snippet = data.items[0]
                 }
-                client.audioconnections.set(channel.guild.id, [player, queue, snippet])
+                client.audioconnections.set(channel.guild.id, [player, queue])
 
-                console.log(snippet, typeof snippet == 'string', typeof snippet)
+                // console.log(snippet, typeof snippet == 'string', typeof snippet)
 
                 let url = `https://www.youtube.com/watch?v=${snippet.id.videoId}`
-                // let stream = await ytdl(url, {
-                //     filter: format => format.itag == 251,
-                //     highWaterMark: 40000,
-                // })
 
                 let stream = await youtubedl.exec(url, {
                     o: '-',
@@ -70,11 +66,9 @@ module.exports = {
                     stdio: ['ignore', 'pipe', 'ignore']
                 }).stdout
 
-                let info = await ytdl.getInfo(snippet.id.videoId);
-                let audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
-                console.log(audioFormats)
-
-                let resource = createAudioResource(stream, )
+                let resource = createAudioResource(stream, {
+                    metadata: snippet,
+                })
                 player.play(resource)
 
             }

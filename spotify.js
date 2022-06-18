@@ -14,7 +14,6 @@ const headers = {
     'Content-Type': 'application/x-www-form-urlencoded' 
 }
 
-
 async function request_authorization() {
 
     const url = 'https://accounts.spotify.com/api/token'

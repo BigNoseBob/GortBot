@@ -27,23 +27,36 @@ async function search({ query, urls }) {
 
 }
 
+async function content_details({ video_id }) {
+
+    const url = `${endpoint}/videos?part=contentDetails&type=video&id=${video_id}&key=${api_key}`
+    let res = await axios({ method: 'GET', url: url, responseType: 'json' }).catch(err => console.error(err))
+
+    return res.data
+
+}
+
 
 module.exports = {
-    search
+    search,
+    content_details,
 }
 
 
 async function main() {
     
-    let data = await search({ query: process.argv[2] || 'https://www.youtube.com/watch?v=GX3ENRaEPFU&ab_channel=Rschris6' })
-    let items = data.items
-    console.log(data)
+    // let data = await search({ query: process.argv[2] || 'https://www.youtube.com/watch?v=GX3ENRaEPFU&ab_channel=Rschris6' })
+    // let items = data.items
+    // console.log(data)
 
-    let urls = []
-    for (let item of items) {
-        urls.push(url_endpoint + item.id.videoId)
-    }
-    console.log(urls)
+    // let urls = []
+    // for (let item of items) {
+    //     urls.push(url_endpoint + item.id.videoId)
+    // }
+    // console.log(urls)
+
+    let data = await content_details({video_id: process.argv[2] || '1oeb9txGY8s'})
+    console.log(data.items[0].contentDetails)
 
 }
 

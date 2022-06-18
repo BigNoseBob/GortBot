@@ -68,7 +68,7 @@ module.exports = {
         if (!res) {
             await require('./join.js').execute({ interaction, client, noreply: true });
         }
-        [player, queue, nowplaying] = client.audioconnections.get(channel.guild.id)
+        [player, queue] = client.audioconnections.get(channel.guild.id)
 
         async function enqueue({ query, immediate }) {
 
@@ -80,11 +80,6 @@ module.exports = {
             
                 if (queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) {
             
-                    // let stream = await ytdl(url, {
-                    //     filter: format => format.itag == 251,
-                    //     highWaterMark: 40000,
-                    // })
-
                     let stream = await youtubedl.exec(url, {
                         o: '-',
                         q: '',
@@ -94,7 +89,9 @@ module.exports = {
                         stdio: ['ignore', 'pipe', 'ignore']
                     }).stdout
 
-                    let resource = createAudioResource(stream)
+                    let resource = createAudioResource(stream, {
+                        metadata: data.items[0]
+                    })
 
                     player.play(resource)
             
