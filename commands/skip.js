@@ -45,7 +45,7 @@ module.exports = {
             })
             player.play(resource)
 
-            await interaction.reply({ content: ':fast_forward: Skipping...' })
+            await interaction.reply({ content: ':track_next: Skipping...' })
         }
 
     }

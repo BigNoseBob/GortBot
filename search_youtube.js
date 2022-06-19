@@ -1,7 +1,9 @@
 // Oliver Rayner
 // June 2022
 
+const { createAudioResource } = require('@discordjs/voice')
 const axios = require('axios')
+const youtubedl = require('youtube-dl-exec')
 require('dotenv').config()
 
 const endpoint = 'https://www.googleapis.com/youtube/v3'
@@ -36,24 +38,37 @@ async function content_details({ video_id }) {
 
 }
 
+async function youtube_dl(url, { discord_resource, metadata }) {
+    
+    // I got this chunk of code somewhere off stack overflow about a year ago (from June 2022)
+    // and I would really like to understand what all theses options and stuff are...
+    let stream = await youtubedl.exec(url, {
+        o: '-',
+        q: '',
+        f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+        r: '100k',
+    }, {
+        stdio: ['ignore', 'pipe', 'ignore']
+    }).stdout
+
+    if (discord_resource) {
+        return createAudioResource(stream, {
+            metadata: metadata
+        })
+    }
+    return stream
+
+}
+
 
 module.exports = {
     search,
     content_details,
+    youtube_dl,
 }
 
 
 async function main() {
-    
-    // let data = await search({ query: process.argv[2] || 'https://www.youtube.com/watch?v=GX3ENRaEPFU&ab_channel=Rschris6' })
-    // let items = data.items
-    // console.log(data)
-
-    // let urls = []
-    // for (let item of items) {
-    //     urls.push(url_endpoint + item.id.videoId)
-    // }
-    // console.log(urls)
 
     let data = await content_details({video_id: process.argv[2] || '1oeb9txGY8s'})
     console.log(data.items[0].contentDetails)

@@ -42,12 +42,13 @@ module.exports = {
 
             for ([i, item] of enumerate(results)) {
 
-                if (!item.snippet || i != 0) {
+                // This is hardcoded and will not work for recursion
+                if ((!item.snippet || i != 0) && (page_num == 0)) {
                     if (i === 0) {
                         let res = await search({ query: item })
                         item = res.items[0]
                     } else {
-                        builder += `${i + 1}. ${item}\n`
+                        builder += `${i + page_num + 1}. ${item}\n`
                         continue
                     }
                 }
