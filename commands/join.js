@@ -51,7 +51,7 @@ module.exports = {
                 clearTimeout(timeout)
                 
                 // Update player and queue
-                [player, queue, nowplaying] = client.audioconnections.get(channel.guild.id)
+                [player, queue] = client.audioconnections.get(channel.guild.id)
 
                 let snippet = queue.shift()
                 if (typeof snippet == 'string') { // So playlists don't bust the quota right away
