@@ -43,15 +43,14 @@ module.exports = {
                 connection.destroy()
                 client.audioconnections.delete(channel.guild.id)
             }, 120000)
+            
+            let [player, queue] = client.audioconnections.get(channel.guild.id)
 
             // Currently having some issues with this kicking off in the middle of playing a resource
             if (queue.length > 0) {
 
                 // Clear the timeout
                 clearTimeout(timeout)
-                
-                // Update player and queue
-                [player, queue] = client.audioconnections.get(channel.guild.id)
 
                 let snippet = queue.shift()
                 if (typeof snippet == 'string') { // So playlists don't bust the quota right away
