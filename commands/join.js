@@ -3,9 +3,8 @@
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice')
-const ytdl = require('ytdl-core')
-const youtubedl = require('youtube-dl-exec')
-const { search } = require('../search_youtube')
+// const youtubedl = require('youtube-dl-exec')
+const { search, youtube_dl } = require('../search_youtube')
 
 module.exports = {
 
@@ -39,8 +38,17 @@ module.exports = {
         // When the player idles, kick it into gear.
         player.on(AudioPlayerStatus.Idle, async () => {
 
+            // Start auto disconnect timeout
+            let timeout = setTimeout(() => {
+                connection.destroy()
+                client.audioconnections.delete(channel.guild.id)
+            }, 120000)
+
             // Currently having some issues with this kicking off in the middle of playing a resource
             if (queue.length > 0) {
+
+                // Clear the timeout
+                clearTimeout(timeout)
                 
                 // Update player and queue
                 [player, queue, nowplaying] = client.audioconnections.get(channel.guild.id)
@@ -53,18 +61,9 @@ module.exports = {
                 }
                 client.audioconnections.set(channel.guild.id, [player, queue])
 
-                // console.log(snippet, typeof snippet == 'string', typeof snippet)
-
                 let url = `https://www.youtube.com/watch?v=${snippet.id.videoId}`
 
-                let stream = await youtubedl.exec(url, {
-                    o: '-',
-                    q: '',
-                    f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-                    r: '100k',
-                }, {
-                    stdio: ['ignore', 'pipe', 'ignore']
-                }).stdout
+                let stream = await youtube_dl(url, { discord_resource: true, metadata: snippet })
 
                 let resource = createAudioResource(stream, {
                     metadata: snippet,
@@ -72,6 +71,7 @@ module.exports = {
                 player.play(resource)
 
             }
+
         })
 
         // hardcode hardcode hardcode hardcode hardcode hardcode hardcode hardcode

@@ -19,7 +19,10 @@ module.exports = {
         }
 
         [player, queue] = client.audioconnections.get(channel.guild.id)
-        nowplaying = player._state.resource.metadata
+        let audio_resource = player._state.resource
+        if (!audio_resource) throw new Error('No media currently playing')
+
+        let nowplaying = audio_resource.metadata
         
         let title = nowplaying.snippet.title.replaceAll('&#39;', "'").replaceAll('&quot;', '"')
         let img_url = nowplaying.snippet.thumbnails.default.url
