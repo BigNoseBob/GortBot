@@ -4,10 +4,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createAudioResource, AudioPlayer, AudioPlayerStatus } = require('@discordjs/voice')
 
-const youtubedl = require('youtube-dl-exec')
-
 const { MessageEmbed } = require('discord.js')
-const { search } = require('../search_youtube.js')
+const { search, youtube_dl } = require('../search_youtube.js')
 const { playlist, request_authorization } = require('../spotify.js')
 
 
@@ -79,19 +77,7 @@ module.exports = {
             
                 if (queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) {
             
-                    let stream = await youtubedl.exec(url, {
-                        o: '-',
-                        q: '',
-                        f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-                        r: '100k',
-                    }, {
-                        stdio: ['ignore', 'pipe', 'ignore']
-                    }).stdout
-
-                    let resource = createAudioResource(stream, {
-                        metadata: data.items[0]
-                    })
-
+                    let resource = await youtube_dl(url, { discord_resource: true, metadata: data.items[0] })
                     player.play(resource)
             
                 } else {

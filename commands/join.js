@@ -63,11 +63,7 @@ module.exports = {
 
                 let url = `https://www.youtube.com/watch?v=${snippet.id.videoId}`
 
-                let stream = await youtube_dl(url, { discord_resource: true, metadata: snippet })
-
-                let resource = createAudioResource(stream, {
-                    metadata: snippet,
-                })
+                let resource = await youtube_dl(url, { discord_resource: true, metadata: snippet })
                 player.play(resource)
 
             }

@@ -23,6 +23,8 @@ async function login({ FLAGS }) {
 
 async function main() {
 
+    const TIME = process.argv.includes('-t')
+
     // Login and grab client
     const client = await login({ FLAGS : process.argv.includes('-f') })
 
@@ -39,6 +41,7 @@ async function main() {
     client.on('interactionCreate', async interaction => {
 
         if (!interaction.isCommand()) return
+        let start_time = performance.now()
 
         const command = client.commands.get(interaction.commandName)
         if (!command) return
@@ -49,6 +52,9 @@ async function main() {
             console.error(err)
             await interaction.reply({ content: `:x: ${err.message}`, ephemeral: true })
         }
+
+        let end_time = performance.now()
+        if (TIME) console.log(`Execution of command \x1b[33m${interaction.commandName}\x1b[0m took \x1b[33m${Math.round(end_time - start_time)}ms\x1b[0m`)
 
     })
 
