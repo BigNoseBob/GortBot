@@ -47,7 +47,7 @@ async function main() {
             await command.execute({ interaction, client })
         } catch (err) {
             console.error(err)
-            await interaction.reply({ content: 'There was an error while executing this command', ephemeral: true })
+            await interaction.reply({ content: `:x: ${err.message}`, ephemeral: true })
         }
 
     })
