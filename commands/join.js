@@ -3,7 +3,6 @@
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice')
-const ytdl = require('ytdl-core')
 const youtubedl = require('youtube-dl-exec')
 const { search } = require('../search_youtube')
 
@@ -16,10 +15,7 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        if (!channel) {
-            interaction.reply('**404** Channel not found.')
-            return
-        }
+        if (!channel) throw new Error('Channel not found.')
 
         // Join the voice channel
         const connection = joinVoiceChannel({

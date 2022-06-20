@@ -4,7 +4,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { createAudioResource, AudioPlayer, AudioPlayerStatus } = require('@discordjs/voice')
 
-const ytdl = require('ytdl-core')
 const youtubedl = require('youtube-dl-exec')
 
 const { MessageEmbed } = require('discord.js')
@@ -33,10 +32,7 @@ module.exports = {
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
         const query = interaction.options._hoistedOptions[0].value
-        if (!channel) {
-            interaction.reply('**404** Channel not found.')
-            return
-        }
+        if (!channel) throw new Error('Channel not found')
 
         let to_queue = [query]
         let is_playlist = false

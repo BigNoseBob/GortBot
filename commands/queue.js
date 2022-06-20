@@ -46,6 +46,7 @@ module.exports = {
                 if ((!item.snippet || i != 0) && (page_num == 0)) {
                     if (i === 0) {
                         let res = await search({ query: item })
+                        if (res.items.length === 0) throw new Error('No results found')
                         item = res.items[0]
                     } else {
                         builder += `${i + page_num + 1}. ${item}\n`
