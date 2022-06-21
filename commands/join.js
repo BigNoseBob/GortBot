@@ -2,8 +2,7 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice')
-// const youtubedl = require('youtube-dl-exec')
+const { joinVoiceChannel, createAudioPlayer, VoiceConnectionStatus, AudioPlayerStatus, entersState } = require('@discordjs/voice')
 const { search, youtube_dl } = require('../search_youtube')
 
 module.exports = {
@@ -46,7 +45,6 @@ module.exports = {
             
             let [player, queue] = client.audioconnections.get(channel.guild.id)
 
-            // Currently having some issues with this kicking off in the middle of playing a resource
             if (queue.length > 0) {
 
                 // Clear the timeout
@@ -73,9 +71,21 @@ module.exports = {
         player.on('error', err => {
             console.log('The audio player encountered an error')
             console.error(err)
-            // interaction.channel.send({ content: ':x: I ain\'t playing that shit you **degen**' })
             interaction.channel.send({ content: ':x: Audio resource encountered an error' })
         })
+
+        connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+            try {
+                await Promise.race([
+                    entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+                ]);
+                // Seems to be reconnecting to a new channel - ignore disconnect
+            } catch (error) {
+                // Seems to be a real disconnect which SHOULDN'T be recovered from
+                connection.destroy();
+            }
+        });
 
         // Give the user confirmation on joining the channel
         if (noreply) return
