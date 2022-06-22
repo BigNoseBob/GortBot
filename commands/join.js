@@ -14,10 +14,7 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        if (!channel) {
-            interaction.reply('**404** Channel not found.')
-            return
-        }
+        if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
 
         // Join the voice channel
         const connection = joinVoiceChannel({
@@ -25,7 +22,7 @@ module.exports = {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator,
         })
-        if (!connection) throw new Error('Failed to join channel')
+        if (!connection) throw new Error('RalphError', { cause: 'Failed to join channel' })
 
         // Create and subscribe the audio player
         let player = createAudioPlayer()
@@ -53,7 +50,7 @@ module.exports = {
                 let snippet = queue.shift()
                 if (typeof snippet == 'string') { // So playlists don't bust the quota right away
                     let data = await search({ query: snippet })
-                    if (data.items.length === 0) throw new Error('No videos found')
+                    if (data.items.length === 0) throw new Error('RalphError', { cause: 'No videos found' })
                     snippet = data.items[0]
                 }
                 client.audioconnections.set(channel.guild.id, [player, queue])
@@ -71,7 +68,7 @@ module.exports = {
         player.on('error', err => {
             console.log('The audio player encountered an error')
             console.error(err)
-            interaction.channel.send({ content: ':x: Audio resource encountered an error' })
+            interaction.channel.send({ content: ':x: `Audio resource encountered an error`' })
         })
 
         connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {

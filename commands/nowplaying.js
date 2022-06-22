@@ -14,13 +14,11 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        if (!channel) {
-            interaction.channel.send({ content: 'Damn bruh' })
-        }
+        if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
 
         [player, queue] = client.audioconnections.get(channel.guild.id)
         let audio_resource = player._state.resource
-        if (!audio_resource) throw new Error('No media currently playing')
+        if (!audio_resource) throw new Error('RalphError', { cause: 'No media currently playing' })
 
         let nowplaying = audio_resource.metadata
         

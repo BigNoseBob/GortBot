@@ -30,10 +30,7 @@ module.exports = {
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
         const query = interaction.options._hoistedOptions[0].value
-        if (!channel) {
-            interaction.reply('**404** Channel not found.')
-            return
-        }
+        if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
 
         let to_queue = [query]
         let is_playlist = false
@@ -50,13 +47,14 @@ module.exports = {
             let playlist_res = await playlist(response.access_token, playlist_id)
 
             // Grab the titles from the spotify res
-            let titles = playlist_res.tracks.items.map(item => `${item.track.name}, ${item.track.artists[0].name}`)
+            let titles = playlist_res.tracks.items.map(item => `${item.track.artists[0].name} - ${item.track.name}`)
             to_queue = titles
 
             playlist_title = playlist_res.name
             playlist_owner_name = playlist_res.owner.display_name
             playlist_url = playlist_res.external_urls.spotify
             playlist_img_url = playlist_res.images[0].url
+            playlist_description = playlist_res.description
 
         }
 

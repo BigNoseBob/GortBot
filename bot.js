@@ -49,8 +49,8 @@ async function main() {
         try {
             await command.execute({ interaction, client })
         } catch (err) {
-            console.error(err)
-            await interaction.reply({ content: `:x: ${err.message}`, ephemeral: true })
+            if (err.message != 'RalphError') console.error(err)
+            await interaction.reply({ content: `:x: \`${err.cause}\``, ephemeral: true })
         }
 
         let end_time = performance.now()

@@ -13,8 +13,7 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-
-        if (!channel) return { content: 'bruh' }
+        if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
 
         // Join the voice channel
         const connection = getVoiceConnection(channel.guild.id)
