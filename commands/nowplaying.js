@@ -4,6 +4,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const { content_details } = require('../search_youtube.js')
+const { decodeEntities } = require('../util.js')
 
 module.exports = {
 
@@ -37,7 +38,7 @@ module.exports = {
 
         let embed = new MessageEmbed()
             .setColor('#D22B2B')
-            .setTitle(':guitar: Now Playing - ' + title)
+            .setTitle(':guitar: Now Playing - ' + decodeEntities(title))
             .setThumbnail(img_url)
             .setDescription(url + `\n${playback_duration_minutes}m ${playback_duration_seconds}s / ${duration}`)
 

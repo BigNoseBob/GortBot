@@ -19,7 +19,7 @@ module.exports = {
 
         let res = client.audioconnections.get(channel.guild.id)
         if (!res || res[0]._state.status === AudioPlayerStatus.Idle) {
-            await interaction.reply({ content: `:x: Nothing to skip` })
+            throw new Error('RalphError', { cuase: 'Nothing to skip to' })
         } else {
             [player, queue] = client.audioconnections.get(channel.guild.id)
             let upnext = queue.shift()

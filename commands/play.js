@@ -2,17 +2,86 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { createAudioResource, AudioPlayer, AudioPlayerStatus } = require('@discordjs/voice')
+const { AudioPlayerStatus } = require('@discordjs/voice')
 
 const { MessageEmbed } = require('discord.js')
 const { search, youtube_dl } = require('../search_youtube.js')
 const { playlist, request_authorization } = require('../spotify.js')
+const { enumerate, decodeEntities } = require('../util.js')
 
 
-function *enumerate(array) {
-    for (let i = 0; i < array.length; i++){
-        yield [i, array[i]]
+// For now only doing support for Spotify playlists
+async function queue_playlist({ url, embed, interaction }) {
+
+    if (embed && !interaction) throw new Error('SpotifyPlaylistCall', { cause: '[embed] field requires an Discord interaction to be provided' })
+
+    // This could probably be cleaner
+    let playlist_id = url.includes('?')? url.substring(url.indexOf('playlist/') + 9, url.indexOf('?')) : url.substring(url.indexOf('playlist/') + 9)
+
+    let authorization_response = await request_authorization()
+    let res = await playlist(authorization_response.access_token, playlist_id)
+    if (!res) throw new Error('RalphError', { cause: 'Missing Spotify playlist resolve' })
+
+    // Format all the tracks in the playlist as "[artist name] - [track title]" in order to search on YT
+    let tracks = res.tracks.items.map(item => `${item.track.artists[0].name} - ${item.track.name}`)
+    if (!embed) return tracks
+
+    let playlist_title = res.name || undefined
+    let playlist_owner_name = res.owner.display_name || undefined
+    let playlist_url = res.external_urls.spotify || undefined
+    let playlist_img_url = res.images[0].url || undefined
+    let playlist_description = res.description || undefined
+
+    embed = new MessageEmbed()
+        .setColor('#D22B2B')
+        .setTitle(playlist_title)
+        .setThumbnail(playlist_img_url)
+        .setDescription(playlist_description + `\n${playlist_url}`)
+        .setAuthor({ name: interaction.user.username, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png` })
+        .setFooter({ text: playlist_owner_name })
+
+    return [ tracks, embed ]
+
+}
+
+async function queue_track({ query, queue, player, interaction, immediate }) {
+
+    if (!immediate) { queue.push(query); return }  // Just push the track if we're not gonna do anything with it
+
+    let data = await search({ query: query })
+    if (data.items.length === 0) throw new Error('RalphError', { cause: 'results are **null**' })
+
+    let url = `https://www.youtube.com/watch?v=${data.items[0].id.videoId}`
+    if (queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) {
+        let resource = await youtube_dl(url, { discord_resource: true, metadata: data.items[0] })
+        player.play(resource)
+    } else {
+        queue.push(data.items[0])   // Maybe want to attach the user object to this as well?
     }
+
+    let title = data.items[0].snippet.title.replaceAll('&#39;', "'").replaceAll('&quot;', '"')
+    let img_url = data.items[0].snippet.thumbnails.default.url
+
+    let embed = new MessageEmbed()
+        .setColor('#D22B2B')
+        .setTitle(decodeEntities(title))
+        .setThumbnail(img_url)
+        .setDescription(url)
+        .setAuthor({ name: interaction.user.username, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png` })
+
+    return embed
+
+}
+
+// [to_queue] and [embeds] are arrays
+async function enqueue({ to_queue, embeds, queue, player, interaction }) {
+
+    let embed
+    for ([i, q] of enumerate(to_queue)) {
+        embed = await queue_track({ query: q, queue: queue, player: player, immediate: i === 0 || i === 1, interaction: interaction })
+    }
+    interaction.reply({ embeds: embeds? embeds : [ embed ] })
+
 }
 
 module.exports = {
@@ -32,30 +101,12 @@ module.exports = {
         const query = interaction.options._hoistedOptions[0].value
         if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
 
-        let to_queue = [query]
-        let is_playlist = false
-        let playlist_title, playlist_owner_name, playlist_url, playlist_img_url, playlist_description
+        let to_queue = [ query ]
+        let embed
 
         // Check if it's a spotify playlist
         if (query.startsWith('https://open.spotify.com/playlist/')) {
-
-            is_playlist = true
-            let playlist_id = query.substring(query.indexOf('playlist/') + 9, query.indexOf('?'))
-            
-            // Get client-credentials authorization from Spotify Web API
-            let response = await request_authorization()
-            let playlist_res = await playlist(response.access_token, playlist_id)
-
-            // Grab the titles from the spotify res
-            let titles = playlist_res.tracks.items.map(item => `${item.track.artists[0].name} - ${item.track.name}`)
-            to_queue = titles
-
-            playlist_title = playlist_res.name
-            playlist_owner_name = playlist_res.owner.display_name
-            playlist_url = playlist_res.external_urls.spotify
-            playlist_img_url = playlist_res.images[0].url
-            playlist_description = playlist_res.description
-
+            [to_queue, embed] = await queue_playlist({ url: query, embed: true, interaction: interaction })
         }
 
         // grab voice channel and create a subscription to it
@@ -65,95 +116,7 @@ module.exports = {
         }
         [player, queue] = client.audioconnections.get(channel.guild.id)
 
-        async function enqueue({ query, immediate }) {
-
-            if (immediate) {
-
-                let data = await search({ query: query })
-                if (data.items.length === 0) throw new Error('No videos found')
-                let url = `https://www.youtube.com/watch?v=${data.items[0].id.videoId}`
-            
-                if (queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) {
-            
-                    let resource = await youtube_dl(url, { discord_resource: true, metadata: data.items[0] })
-                    player.play(resource)
-            
-                } else {
-                    queue.push(data.items[0])   // Maybe want to attach the user object to this as well?
-                }
-
-
-                // Reply for when it is not a playlist
-                if (!is_playlist) {
-
-                    let item = data.items[0]
-
-                    let title = item.snippet.title.replaceAll('&#39;', "'").replaceAll('&quot;', '"')
-                    let img_url = item.snippet.thumbnails.default.url
-                    let url = `https://www.youtube.com/watch?v=${item.id.videoId}`
-
-                    let embed = new MessageEmbed()
-                        .setColor('#D22B2B')
-                        .setTitle(title)
-                        .setThumbnail(img_url)
-                        .setDescription(url)
-                        .setAuthor({ name: interaction.user.username, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png` })
-
-                    await interaction.reply({ embeds: [embed] })
-
-                } else {
-                    
-                    let embed = new MessageEmbed()
-                        .setColor('#D22B2B')
-                        .setTitle(playlist_title)
-                        .setThumbnail(playlist_img_url)
-                        .setDescription(playlist_description + `\n${playlist_url}?`)
-                        .setAuthor({ name: interaction.user.username, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png` })
-                        .setFooter({ text: playlist_owner_name })
-
-                    await interaction.reply({ embeds: [embed] }).catch(err => {})
-
-                }
-
-                
-
-            } else {
-
-                queue.push(query)
-
-            }
-        
-        }
-
-        for ([i, q] of enumerate(to_queue)) {
-            if (i === 0 || i === 1) {
-                await enqueue({ query: q, immediate: true })
-            }
-            else {
-                await enqueue({ query: q, immediate: false })
-            }
-        }
-
-        // if (is_playlist) {
-        //     // Send the embed back
-        //     let embed = make_embed(data.items[0], url)
-        //     embed.setAuthor({ name: interaction.user.username, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png` })
-        //     await interaction.reply({ embeds: [embed] })
-        // }
-
-        // let item = queue[0]
-        // let title = item.snippet.title.replaceAll('&#39;', "'")
-        // let img_url = item.snippet.thumbnails.default.url
-        // let url = `https://www.youtube.com/watch?v=${item.id.videoId}`
-
-        // let embed = new MessageEmbed()
-        //     .setColor('#D22B2B')
-        //     .setTitle(title)
-        //     .setThumbnail(img_url)
-        //     .setDescription(url)
-        //     .setAuthor({ name: interaction.user.username, iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png` })
-        
-        // await interaction.reply({ embeds: [embed] })
+        await enqueue({ to_queue: to_queue, embeds: embed? [embed] : null, queue: queue, player: player, interaction: interaction})
 
     }
 

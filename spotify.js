@@ -29,6 +29,7 @@ async function playlist(access_token, playlist_id) {
     const url = endpoint + `/playlists/${playlist_id}`
     let headers = { 'Authorization': `Bearer ${access_token}` }
     let res = await axios({ method: 'GET', url: url, headers: headers, responseType: 'json'}).catch(err => console.error(err))
+    if (!res) throw new Error('RalphError', { cause: 'Playlist not found' })
     return res.data
 
 }
