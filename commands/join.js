@@ -32,10 +32,11 @@ module.exports = {
         client.audioconnections.set(channel.guild.id, [player, []] )
 
         // When the player idles, kick it into gear.
+        let timeout
         player.on(AudioPlayerStatus.Idle, async () => {
 
             // Start auto disconnect timeout
-            let timeout = setTimeout(() => {
+            timeout = setTimeout(() => {
                 connection.destroy()
                 client.audioconnections.delete(channel.guild.id)
             }, 120000)
@@ -62,6 +63,10 @@ module.exports = {
 
             }
 
+        })
+
+        player.on(AudioPlayerStatus.Playing, async () => {
+            clearTimeout(timeout)
         })
 
         // hardcode hardcode hardcode hardcode hardcode hardcode hardcode hardcode

@@ -40,13 +40,16 @@ async function content_details({ video_id }) {
 
 async function youtube_dl(url, { discord_resource, metadata }) {
     
-    // I got this chunk of code somewhere off stack overflow about a year ago (from June 2022)
+    // I got this chunk of code somewhere off stack overflow about a year ago (a year from June 2022)
     // and I would really like to understand what all theses options and stuff are...
+    // https://github.com/ytdl-org/youtube-dl/blob/master/README.md#format-selection
     let stream = await youtubedl.exec(url, {
         o: '-',
         q: '',
-        f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+        f: 'bestaudio[ext=webm]',
+        // f: 'bestaudio[ext=webm+acodec=opus+asr=72000]/bestaudio',
         r: '100k',
+        'buffer-size': 2048,
     }, {
         stdio: ['ignore', 'pipe', 'ignore']
     }).stdout

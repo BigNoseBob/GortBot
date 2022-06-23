@@ -20,10 +20,7 @@ module.exports = {
         if (!channel) return { content: 'bruh' }
 
         [player, queue] = client.audioconnections.get(channel.guild.id)
-        if (queue.length === 0) {
-            interaction.reply('The queue is currently **empty**.')
-            return
-        }
+        if (queue.length === 0) throw new Error('RalphError', { cause: 'The queue is currently empty' })
 
         async function recursion(results_per_page, page_num = 0) {
             
