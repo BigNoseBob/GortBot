@@ -63,7 +63,6 @@ module.exports = {
 
             interaction.reply({ embeds: [embed] })
 
-
         }
 
         await recursion(5)

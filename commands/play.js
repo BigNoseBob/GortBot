@@ -54,7 +54,7 @@ async function queue_track({ query, queue, player, interaction, immediate, force
     let url = `https://www.youtube.com/watch?v=${data.items[0].id.videoId}`
     if ((queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) || force) {
         let resource = await youtube_dl(url, { discord_resource: true, metadata: data.items[0] })
-        player.play(resource)
+        await player.play(resource)
     } else {
         queue.push(data.items[0])   // Maybe want to attach the user object to this as well?
     }
