@@ -2,15 +2,6 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js')
-const { AudioPlayerStatus } = require('@discordjs/voice')
-
-// Helper function
-function *enumerate(array) {
-    for (let i = 0; i < array.length; i++){
-        yield [i, array[i]]
-    }
-}
 
 module.exports = {
 

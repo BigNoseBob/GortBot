@@ -3,5 +3,17 @@
         "disconnect":   ":dash: outta here **bitch**.",
         "skip":         ":track_next: Skipping...",
         "join":         "placeholder"
+    },
+    "prefix":           "!",
+    "aliases": {
+        "p":            "play",
+        "np":           "nowplaying",
+        "j":            "join",
+        "dc":           "disconnect",
+        "s":            "skip",
+        "q":            "queue",
+        "c":            "clear",
+        "fp":           "forceplay"
     }
+    
 }

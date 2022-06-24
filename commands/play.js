@@ -44,7 +44,7 @@ async function queue_playlist({ url, embed, interaction }) {
 
 }
 
-async function queue_track({ query, queue, player, interaction, immediate }) {
+async function queue_track({ query, queue, player, interaction, immediate, force }) {
 
     if (!immediate) { queue.push(query); return }  // Just push the track if we're not gonna do anything with it
 
@@ -52,7 +52,7 @@ async function queue_track({ query, queue, player, interaction, immediate }) {
     if (data.items.length === 0) throw new Error('RalphError', { cause: 'results are **null**' })
 
     let url = `https://www.youtube.com/watch?v=${data.items[0].id.videoId}`
-    if (queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) {
+    if ((queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) || force) {
         let resource = await youtube_dl(url, { discord_resource: true, metadata: data.items[0] })
         player.play(resource)
     } else {
@@ -74,11 +74,11 @@ async function queue_track({ query, queue, player, interaction, immediate }) {
 }
 
 // [to_queue] and [embeds] are arrays
-async function enqueue({ to_queue, embeds, queue, player, interaction }) {
+async function enqueue({ to_queue, embeds, queue, player, interaction, force }) {
 
     let embed
     for ([i, q] of enumerate(to_queue)) {
-        embed = await queue_track({ query: q, queue: queue, player: player, immediate: i === 0 || i === 1, interaction: interaction })
+        embed = await queue_track({ query: q, queue: queue, player: player, immediate: i === 0 || i === 1 || force, interaction: interaction, force: force })
     }
     interaction.reply({ embeds: embeds? embeds : [ embed ] })
 
@@ -94,7 +94,7 @@ module.exports = {
                 .setDescription('Audio to look for on YouTube')
                 .setRequired(true)
         ),
-    async execute({ interaction, client }) {
+    async execute({ interaction, client, force }) {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
@@ -106,7 +106,7 @@ module.exports = {
 
         // Check if it's a spotify playlist
         if (query.startsWith('https://open.spotify.com/playlist/')) {
-            [to_queue, embed] = await queue_playlist({ url: query, embed: true, interaction: interaction })
+            [to_queue, embed] = await queue_playlist({ url: query, embed: true, interaction: interaction, force: force })
         }
 
         // grab voice channel and create a subscription to it
@@ -116,8 +116,7 @@ module.exports = {
         }
         [player, queue] = client.audioconnections.get(channel.guild.id)
 
-        await enqueue({ to_queue: to_queue, embeds: embed? [embed] : null, queue: queue, player: player, interaction: interaction})
-
+        await enqueue({ to_queue: to_queue, embeds: embed? [embed] : null, queue: queue, player: player, interaction: interaction, force: force})
     }
 
 }
