@@ -2,16 +2,10 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js')
-const { AudioPlayerStatus } = require('@discordjs/voice')
-const { search } = require('../search_youtube.js')
+const { MessageEmbed } = require('discord.js')
 
-// Helper function
-function *enumerate(array) {
-    for (let i = 0; i < array.length; i++){
-        yield [i, array[i]]
-    }
-}
+const { search } = require('../search_youtube.js')
+const { enumerate, decodeEntities } = require('../util.js')
 
 
 module.exports = {
@@ -26,10 +20,7 @@ module.exports = {
         if (!channel) return { content: 'bruh' }
 
         [player, queue] = client.audioconnections.get(channel.guild.id)
-        if (queue.length === 0) {
-            interaction.reply('The queue is currently **empty**.')
-            return
-        }
+        if (queue.length === 0) throw new Error('RalphError', { cause: 'The queue is currently empty' })
 
         async function recursion(results_per_page, page_num = 0) {
             
@@ -59,7 +50,7 @@ module.exports = {
                 let url = id? `https://www.youtube.com/watch?v=${id}` : 'No video URL found'
                 let thumbnail_url = item.snippet.thumbnails.high.url || 'No thumbnail URL found'
 
-                embed.setTitle(`:hourglass_flowing_sand: Up Next - ${title}`)
+                embed.setTitle(`:hourglass_flowing_sand: Up Next - ${decodeEntities(title)}`)
                 embed.setDescription(url)
                 embed.setThumbnail(thumbnail_url)
 

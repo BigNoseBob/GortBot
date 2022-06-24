@@ -2,7 +2,7 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { getVoiceConnection  } = require('@discordjs/voice')
+const { getVoiceConnection, entersState, VoiceConnectionStatus } = require('@discordjs/voice')
 
 module.exports = {
 
@@ -13,11 +13,15 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-
-        if (!channel) return { content: 'bruh' }
+        if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
 
         // Join the voice channel
         const connection = getVoiceConnection(channel.guild.id)
+
+        if (connection.state != VoiceConnectionStatus.Ready) {
+            await entersState(connection, VoiceConnectionStatus.Ready, 5_000)
+        }
+
         connection.destroy()
         client.audioconnections.delete(channel.guild.id)
 

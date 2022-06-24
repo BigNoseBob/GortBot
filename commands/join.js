@@ -2,9 +2,8 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice')
-const youtubedl = require('youtube-dl-exec')
-const { search } = require('../search_youtube')
+const { joinVoiceChannel, createAudioPlayer, VoiceConnectionStatus, AudioPlayerStatus, entersState } = require('@discordjs/voice')
+const { search, youtube_dl } = require('../search_youtube')
 
 module.exports = {
 
@@ -15,7 +14,7 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        if (!channel) throw new Error('Channel not found.')
+        if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
 
         // Join the voice channel
         const connection = joinVoiceChannel({
@@ -23,7 +22,7 @@ module.exports = {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator,
         })
-        if (!connection) throw new Error('Failed to join channel')
+        if (!connection) throw new Error('RalphError', { cause: 'Failed to join channel' })
 
         // Create and subscribe the audio player
         let player = createAudioPlayer()
@@ -33,50 +32,62 @@ module.exports = {
         client.audioconnections.set(channel.guild.id, [player, []] )
 
         // When the player idles, kick it into gear.
+        let timeout
         player.on(AudioPlayerStatus.Idle, async () => {
 
-            // Currently having some issues with this kicking off in the middle of playing a resource
+            // Start auto disconnect timeout
+            timeout = setTimeout(() => {
+                connection.destroy()
+                client.audioconnections.delete(channel.guild.id)
+            }, 120000)
+            
+            let [player, queue] = client.audioconnections.get(channel.guild.id)
+
             if (queue.length > 0) {
-                
-                // Update player and queue
-                [player, queue, nowplaying] = client.audioconnections.get(channel.guild.id)
+
+                // Clear the timeout
+                clearTimeout(timeout)
 
                 let snippet = queue.shift()
                 if (typeof snippet == 'string') { // So playlists don't bust the quota right away
                     let data = await search({ query: snippet })
-                    if (data.items.length === 0) throw new Error('No videos found')
+                    if (data.items.length === 0) throw new Error('RalphError', { cause: 'No videos found' })
                     snippet = data.items[0]
                 }
                 client.audioconnections.set(channel.guild.id, [player, queue])
 
-                // console.log(snippet, typeof snippet == 'string', typeof snippet)
-
                 let url = `https://www.youtube.com/watch?v=${snippet.id.videoId}`
 
-                let stream = await youtubedl.exec(url, {
-                    o: '-',
-                    q: '',
-                    f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-                    r: '100k',
-                }, {
-                    stdio: ['ignore', 'pipe', 'ignore']
-                }).stdout
-
-                let resource = createAudioResource(stream, {
-                    metadata: snippet,
-                })
+                let resource = await youtube_dl(url, { discord_resource: true, metadata: snippet })
                 player.play(resource)
 
             }
+
+        })
+
+        player.on(AudioPlayerStatus.Playing, async () => {
+            clearTimeout(timeout)
         })
 
         // hardcode hardcode hardcode hardcode hardcode hardcode hardcode hardcode
         player.on('error', err => {
             console.log('The audio player encountered an error')
             console.error(err)
-            // interaction.channel.send({ content: ':x: I ain\'t playing that shit you **degen**' })
-            interaction.channel.send({ content: ':x: Audio resource encountered an error' })
+            interaction.channel.send({ content: ':x: `Audio resource encountered an error`' })
         })
+
+        connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+            try {
+                await Promise.race([
+                    entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+                ]);
+                // Seems to be reconnecting to a new channel - ignore disconnect
+            } catch (error) {
+                // Seems to be a real disconnect which SHOULDN'T be recovered from
+                connection.destroy();
+            }
+        });
 
         // Give the user confirmation on joining the channel
         if (noreply) return
