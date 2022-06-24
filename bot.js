@@ -72,7 +72,7 @@ async function main() {
 
     client.on('messageCreate', async message => {
 
-        let config = client.guildConfigs.get(message.guildId).prefix
+        let config = client.guildConfigs.get(message.guildId)
         if (!config) config = { prefix: '!' }       
         let prefix = config.prefix
 
