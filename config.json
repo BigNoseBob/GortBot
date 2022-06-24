@@ -4,7 +4,7 @@
         "skip":         ":track_next: Skipping...",
         "join":         "placeholder"
     },
-    "prefix":           "!",
+    "prefix":           "!!",
     "aliases": {
         "p":            "play",
         "np":           "nowplaying",
@@ -14,6 +14,9 @@
         "q":            "queue",
         "c":            "clear",
         "fp":           "forceplay"
-    }
+    },
+    "config_commands": [
+        "prefix"
+    ]
     
 }

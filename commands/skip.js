@@ -2,9 +2,8 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { createAudioResource, AudioPlayerStatus } = require('@discordjs/voice')
-const youtubedl = require('youtube-dl-exec')
-const { search } = require('../search_youtube.js')
+const { AudioPlayerStatus } = require('@discordjs/voice')
+const { search, youtube_dl } = require('../search_youtube.js')
 
 module.exports = {
 
@@ -23,6 +22,8 @@ module.exports = {
         } else {
             [player, queue] = client.audioconnections.get(channel.guild.id)
             let upnext = queue.shift()
+            if (player.loop) queue.unshift(upnext)
+            if (player.loopqueue) queue.push(upnext)
 
             // If the search wasn't immediate --> i.e. from a playlist
             if (!upnext.id) {
@@ -31,18 +32,7 @@ module.exports = {
             }
 
             let url = `https://www.youtube.com/watch?v=${upnext.id.videoId}`
-            let stream = await youtubedl.exec(url, {
-                o: '-',
-                q: '',
-                f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-                r: '100k',
-            }, {
-                stdio: ['ignore', 'pipe', 'ignore']
-            }).stdout
-
-            let resource = createAudioResource(stream, {
-                metadata: upnext
-            })
+            let resource = await youtube_dl(url, {discord_resource: true, metadata: upnext})
             player.play(resource)
 
             await interaction.reply({ content: ':track_next: Skipping...' })

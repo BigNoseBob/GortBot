@@ -98,12 +98,10 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        const query = interaction.options._hoistedOptions[0].value
-<<<<<<< HEAD
-        if (!channel) throw new Error('Channel not found')
-=======
         if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
->>>>>>> 8667518c879e1d7af2a442309b37eff5aa86cb82
+        const option = interaction.options._hoistedOptions[0]
+        if (!option) throw new Error('RalphError', { cause: 'A search query is required is execution of command \'play\'' })
+        const query = option.value
 
         let to_queue = [ query ]
         let embed

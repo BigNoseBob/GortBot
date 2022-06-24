@@ -17,7 +17,7 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        if (!channel) return { content: 'bruh' }
+        if (!channel) { throw new Error('RalphError', { cause: 'No voice channel found' }) }
 
         [player, queue] = client.audioconnections.get(channel.guild.id)
         if (queue.length === 0) throw new Error('RalphError', { cause: 'The queue is currently empty' })
@@ -40,7 +40,11 @@ module.exports = {
                         if (res.items.length === 0) throw new Error('No results found')
                         item = res.items[0]
                     } else {
-                        builder += `${i + page_num + 1}. ${item}\n`
+                        if (typeof item != 'string') {
+                            builder += `${i + page_num + 1}. ${decodeEntities(item.snippet.title)}\n`
+                        } else {
+                            builder += `${i + page_num + 1}. ${item}\n`
+                        }
                         continue
                     }
                 }
