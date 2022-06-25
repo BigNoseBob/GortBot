@@ -12,19 +12,19 @@ module.exports = {
         .addStringOption(option =>
             option.setName('prefix')
                 .setDescription('Set the server prefix')
-                .setRequired(true)
+                .setRequired(false)
         ),
     async execute({ interaction, client }) {
 
         let config = client.guildConfigs.get(interaction.guildId)
-        if (!config) throw new Error('RalphError', { cause: `Config file for guild id ${interaction.guildId} does not exist` })
+        if (!config) throw new Error('RalphError', { cause: `Config file for guild id ${interaction.guildId} does not exist. Run /config to generate one` })
         let prefix = interaction.options._hoistedOptions[0].value
-        if (!prefix) throw new Error('RalphError', { cause: 'A prefix is required' })
+        if (!prefix) throw new Error('RalphError', { cause: `Current prefix for guild id ${interaction.guildId} is \`${config.prefix}\`` })
 
         config.prefix = prefix
         fs.writeFileSync(`guilds/${interaction.guildId}.json`, JSON.stringify(config))
 
-        interaction.reply({ content: `Server prefix changed to \`${prefix}\`` })
+        interaction.reply({ content: `Server prefix for guild id ${interaction.guildId} changed to \`${prefix}\`` })
 
     }
 

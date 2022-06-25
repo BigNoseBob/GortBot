@@ -37,7 +37,12 @@ module.exports = {
 
             // Start auto disconnect timeout
             timeout = setTimeout(() => {
-                connection.destroy()
+                try {
+                    connection.destroy()
+                } catch (err) {
+                    // Don't really know what to do with this error yet so I'm just gonna log it
+                    console.error(err)
+                }
                 client.audioconnections.delete(channel.guild.id)
             }, 120000)
             
@@ -85,6 +90,7 @@ module.exports = {
                 // Seems to be reconnecting to a new channel - ignore disconnect
             } catch (error) {
                 // Seems to be a real disconnect which SHOULDN'T be recovered from
+                clearTimeout(timeout)
                 connection.destroy();
             }
         });
