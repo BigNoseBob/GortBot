@@ -54,6 +54,9 @@ module.exports = {
                 clearTimeout(timeout)
 
                 let snippet = queue.shift()
+                if (player.loop) queue.unshift(snippet)
+                if (player.loop_queue) queue.push(snippet)
+
                 if (typeof snippet == 'string') { // So playlists don't bust the quota right away
                     let data = await search({ query: snippet })
                     if (data.items.length === 0) throw new Error('RalphError', { cause: 'No videos found' })

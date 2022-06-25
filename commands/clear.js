@@ -12,7 +12,7 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        if (!channel) return { content: 'bruh' }
+        if (!channel) throw new Error('Guild Member is not in any voice channel.')
 
         [player, queue] = client.audioconnections.get(channel.guild.id)
         client.audioconnections.set(channel.guild.id, [player, []])

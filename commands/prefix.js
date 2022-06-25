@@ -24,7 +24,7 @@ module.exports = {
         config.prefix = prefix
         fs.writeFileSync(`guilds/${interaction.guildId}.json`, JSON.stringify(config))
 
-        interaction.reply({ content: `Server prefix for guild id ${interaction.guildId} changed to \`${prefix}\`` })
+        interaction.reply({ content: `:hammer: Server prefix changed to \`${prefix}\`` })
 
     }
 

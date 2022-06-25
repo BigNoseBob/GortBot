@@ -54,7 +54,7 @@ async function queue_track({ query, queue, player, interaction, immediate, force
     let url = `https://www.youtube.com/watch?v=${data.items[0].id.videoId}`
     if ((queue.length === 0 && player._state.status === AudioPlayerStatus.Idle) || force) {
         let resource = await youtube_dl(url, { discord_resource: true, metadata: data.items[0] })
-        player.play(resource)
+        await player.play(resource)
     } else {
         queue.push(data.items[0])   // Maybe want to attach the user object to this as well?
     }
@@ -98,8 +98,10 @@ module.exports = {
 
         // set constants and grab the current voice channel user is in
         const channel = interaction.member.voice.channel
-        const query = interaction.options._hoistedOptions[0].value
         if (!channel) throw new Error('RalphError', { cause: 'No voice channel found' })
+        const option = interaction.options._hoistedOptions[0]
+        if (!option) throw new Error('RalphError', { cause: 'A search query is required is execution of command \'play\'' })
+        const query = option.value
 
         let to_queue = [ query ]
         let embed
