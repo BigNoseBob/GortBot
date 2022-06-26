@@ -18,7 +18,7 @@ module.exports = {
         const port = 8000
         const url = user_authorization({
             scopes: [ 'user-read-private', 'user-read-email', 'user-top-read' ],
-            redirect_uri: `http://ec2-3-19-57-195.us-east-2.compute.amazonaws.com`
+            redirect_uri: `http://ec2-3-19-57-195.us-east-2.compute.amazonaws.com:${port}`
         })
 
         let embed = new MessageEmbed()
@@ -31,10 +31,11 @@ module.exports = {
 
 
         // HTTP Server
-        const PORT = 8000
         let server = http.createServer(async (req, res) => {
 
             if (req.url.startsWith('/?code=')) {
+
+                res.write('SUCCESS')
 
                 let data = querystring.parse(req.url.substring(req.url.indexOf('?') + 1))
                 console.log(data)
@@ -49,10 +50,10 @@ module.exports = {
 
         })
 
-        server.listen(PORT)
+        server.listen(port)
         
 
-        console.log(`Listening on http://localhost:${PORT}`)
+        console.log(`Listening on http://ec2-3-19-57-195.us-east-2.compute.amazonaws.com:${port}`)
 
     }
 
