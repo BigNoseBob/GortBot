@@ -50,10 +50,10 @@ module.exports = {
 
         })
 
-        server.listen(port)
+        server.listen(port, '3.19.57.195')
         
 
-        console.log(`Listening on http://ec2-3-19-57-195.us-east-2.compute.amazonaws.com:${port}`)
+        console.log(`Listening on 3.19.57.195:${port}`)
 
     }
 
