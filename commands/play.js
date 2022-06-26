@@ -18,7 +18,7 @@ async function queue_playlist({ url, embed, interaction }) {
     // This could probably be cleaner
     let playlist_id = url.includes('?')? url.substring(url.indexOf('playlist/') + 9, url.indexOf('?')) : url.substring(url.indexOf('playlist/') + 9)
 
-    let authorization_response = await request_authorization()
+    let authorization_response = await request_authorization({ grant_type: 'client_credentials' })
     let res = await playlist(authorization_response.access_token, playlist_id)
     if (!res) throw new Error('RalphError', { cause: 'Missing Spotify playlist resolve' })
 
