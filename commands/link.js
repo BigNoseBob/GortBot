@@ -62,8 +62,6 @@ module.exports = {
 
         })
 
-        server.keepAliveTimeout(10_000)
-
         try {
             server.listen(port)
             console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
