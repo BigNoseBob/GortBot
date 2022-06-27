@@ -35,25 +35,24 @@ module.exports = {
 
             if (req.url.startsWith('/?code=')) {
 
+                res.writeHead(200, { 'Content-Type': 'text/html' })
                 res.write('SUCCESS')
 
                 let data = querystring.parse(req.url.substring(req.url.indexOf('?') + 1))
                 console.log(data)
 
-                fs.writeFileSync()
+                fs.writeFileSync(`${interaction.user.id}.json`)
                 res.end()
             } else {
-                res.writeHead({ 'Content-Type': 'text/plain' })
+                res.writeHead(200, { 'Content-Type': 'text/html' })
                 res.write('WRECK-IT')
                 res.end()
             }
 
         })
 
-        server.listen(port, '3.19.57.195')
-        
-
-        console.log(`Listening on 3.19.57.195:${port}`)
+        server.listen(port)
+        console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
 
     }
 

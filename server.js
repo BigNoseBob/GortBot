@@ -16,7 +16,7 @@ async function main() {
             fs.writeFileSync()
             res.end()
         } else {
-            res.writeHead({ 'Content-Type': 'text/plain' })
+            res.writeHead(200, { 'Content-Type': 'text/html' })
             res.write('WRECK-IT')
             res.end()
         }
