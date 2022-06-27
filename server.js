@@ -6,10 +6,12 @@ require('dotenv').config()
 const http = require('node:http')
 const fs = require('node:fs')
 const querystring = require('node:querystring')
+const { request_authorization } = require('./spotify.js')
 
 async function main() {
-
+	
     // HTTP Server
+    const port = 8000
     let server = http.createServer(async (req, res) => {
 
         if (req.url.startsWith('/?code=')) {
@@ -40,12 +42,8 @@ async function main() {
 
     })
 
-    try {
-        server.listen(port)
-        console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
-    } catch (err) {
-        // Port is already in use
-    }
+    server.listen(port)
+    console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
 
 }
 
