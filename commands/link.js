@@ -18,7 +18,7 @@ module.exports = {
         const port = 8000
         const url = user_authorization({
             scopes: [ 'user-read-private', 'user-read-email', 'user-top-read' ],
-            redirect_uri: `http://ec2-3-19-57-195.us-east-2.compute.amazonaws.com:${port}`
+            redirect_uri: `http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`
         })
 
         let embed = new MessageEmbed()
