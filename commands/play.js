@@ -119,6 +119,7 @@ module.exports = {
         [player, queue] = client.audioconnections.get(channel.guild.id)
 
         await enqueue({ to_queue: to_queue, embeds: embed? [embed] : null, queue: queue, player: player, interaction: interaction, force: force})
-    }
+    },
+    enqueue
 
 }

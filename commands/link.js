@@ -36,8 +36,7 @@ module.exports = {
 
             if (req.url.startsWith('/?code=')) {
 
-                res.writeHead(200, { 'Content-Type': 'text/html' })
-                res.write('SUCCESS')
+                res.writeHead(302, { 'Content-Type': 'text/html', location: 'https://brrr.money/' })
 
                 let data = querystring.parse(req.url.substring(req.url.indexOf('?') + 1))
                 let auth = await request_authorization({  
@@ -48,7 +47,7 @@ module.exports = {
 
                 console.log(auth)
 
-                fs.writeFileSync(`${interaction.user.id}.json`, JSON.stringify({
+                fs.writeFileSync(`./users/${interaction.user.id}.json`, JSON.stringify({
                     access_token: auth.access_token,
                     refresh_token: auth.refresh_token,
                 }))
@@ -61,6 +60,11 @@ module.exports = {
             }
 
         })
+
+        // Close the http server after 30 seconds
+        setTimeout(() => {
+            server.close()
+        }, 30_000)
 
         server.listen(port)
         console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
