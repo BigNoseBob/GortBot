@@ -3,10 +3,11 @@
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
-const { user_authorization } = require('../spotify.js')
+const { user_authorization, request_authorization } = require('../spotify.js')
 
 const http = require('node:http')
 const fs = require('node:fs')
+const querystring = require('node:querystring')
 
 module.exports = {
 
@@ -39,10 +40,14 @@ module.exports = {
                 res.write('SUCCESS')
 
                 let data = querystring.parse(req.url.substring(req.url.indexOf('?') + 1))
-                console.log(data)
+                let auth = await request_authorization({  grant_type: 'authorization_code', code: data.code })
 
-                fs.writeFileSync(`${interaction.user.id}.json`)
+                fs.writeFileSync(`${interaction.user.id}.json`, JSON.stringify({
+                    access_token: auth.access_token,
+                    refresh_token: auth.refresh_token,
+                }))
                 res.end()
+                
             } else {
                 res.writeHead(200, { 'Content-Type': 'text/html' })
                 res.write('WRECK-IT')
