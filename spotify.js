@@ -17,7 +17,7 @@ const headers = {
     'Content-Type': 'application/x-www-form-urlencoded' 
 }
 
-async function request_authorization({ grant_type, code, refresh_token }) {
+async function request_authorization({ grant_type, code, refresh_token, redirect_uri }) {
 
     if (grant_type === 'authorization_code' && !code) 
         throw new Error('APICallError', { cause: 'grant_type "authorization_code" requires an authorization code' })
@@ -30,7 +30,7 @@ async function request_authorization({ grant_type, code, refresh_token }) {
     body.append('grant_type', grant_type)
     if (code) {
         body.append('code', code)
-        body.append('redirect_uri', REDIRECT_URI)
+        body.append('redirect_uri', redirect_uri)
     }
     if (refresh_token) {
         body.append('refresh_token', refresh_token)

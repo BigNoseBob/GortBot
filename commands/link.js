@@ -40,14 +40,20 @@ module.exports = {
                 res.write('SUCCESS')
 
                 let data = querystring.parse(req.url.substring(req.url.indexOf('?') + 1))
-                let auth = await request_authorization({  grant_type: 'authorization_code', code: data.code })
+                let auth = await request_authorization({  
+                    grant_type: 'authorization_code', 
+                    code: data.code,
+                    redirect_uri: `http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`,
+                })
+
+                console.log(auth)
 
                 fs.writeFileSync(`${interaction.user.id}.json`, JSON.stringify({
                     access_token: auth.access_token,
                     refresh_token: auth.refresh_token,
                 }))
                 res.end()
-                
+
             } else {
                 res.writeHead(200, { 'Content-Type': 'text/html' })
                 res.write('WRECK-IT')
