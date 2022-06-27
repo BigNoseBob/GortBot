@@ -17,6 +17,16 @@ const headers = {
     'Content-Type': 'application/x-www-form-urlencoded' 
 }
 
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 async function request_authorization({ grant_type, code, refresh_token, redirect_uri }) {
 
     if (grant_type === 'authorization_code' && !code) 
@@ -50,13 +60,14 @@ async function playlist(access_token, playlist_id) {
 
 }
 
-function user_authorization({ scopes, redirect_uri }) {
+function user_authorization({ scopes, redirect_uri, state }) {
 
     return 'https://accounts.spotify.com/authorize?' + querystring.stringify({
         response_type: 'code',
         client_id: CLIENT_ID,
         scope: scopes.join(' '),
         redirect_uri: redirect_uri,
+        state: state,
     })
 
 }

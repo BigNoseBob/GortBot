@@ -14,6 +14,7 @@ async function main() {
 
         if (req.url.startsWith('/?code=')) {
 
+            // console.log(req)
             res.writeHead(302, { 'Content-Type': 'text/html', location: 'https://brrr.money/' })
 
             let data = querystring.parse(req.url.substring(req.url.indexOf('?') + 1))
@@ -25,7 +26,7 @@ async function main() {
 
             console.log(auth)
 
-            fs.writeFileSync(`./users/${interaction.user.id}.json`, JSON.stringify({
+            fs.writeFileSync(`./users/${data.state}.json`, JSON.stringify({
                 access_token: auth.access_token,
                 refresh_token: auth.refresh_token,
             }))
@@ -38,8 +39,6 @@ async function main() {
         }
 
     })
-
-    server.keepAliveTimeout(10_000)
 
     try {
         server.listen(port)
