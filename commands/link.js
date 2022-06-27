@@ -4,6 +4,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const { user_authorization, request_authorization } = require('../spotify.js')
+const axios = require('axios')
 
 const http = require('node:http')
 const fs = require('node:fs')
@@ -30,12 +31,12 @@ module.exports = {
 
         interaction.reply({ embeds: [embed], ephemeral: true })
 
-
         // HTTP Server
         let server = http.createServer(async (req, res) => {
 
             if (req.url.startsWith('/?code=')) {
 
+                console.log(req)
                 res.writeHead(302, { 'Content-Type': 'text/html', location: 'https://brrr.money/' })
 
                 let data = querystring.parse(req.url.substring(req.url.indexOf('?') + 1))
@@ -61,13 +62,14 @@ module.exports = {
 
         })
 
-        // Close the http server after 30 seconds
-        setTimeout(() => {
-            server.close()
-        }, 30_000)
+        server.keepAliveTimeout(10_000)
 
-        server.listen(port)
-        console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
+        try {
+            server.listen(port)
+            console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
+        } catch (err) {
+            // Port is already in use
+        }
 
     }
 
