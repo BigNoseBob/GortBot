@@ -78,7 +78,9 @@ async function enqueue({ to_queue, embeds, queue, player, interaction, force }) 
 
     let embed
     for ([i, q] of enumerate(to_queue)) {
-        embed = await queue_track({ query: q, queue: queue, player: player, immediate: i === 0 || i === 1 || force, interaction: interaction, force: force })
+        res = await queue_track({ query: q, queue: queue, player: player, immediate: i === 0 || i === 1 || force, interaction: interaction, force: force })
+        if (i === 0) 
+            embed = res
     }
     interaction.reply({ embeds: embeds? embeds : [ embed ] })
 

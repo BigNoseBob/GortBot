@@ -24,8 +24,8 @@ module.exports = {
 
         // Get the top songs from spotify
         let top_data = await user_top(access_token, { type: 'tracks' })
-        console.log(top_data.items)
-        let top_tracks = top_data.items.map(item => item.name)
+        let top_tracks = top_data.items.map(item => `${item.artists[0].name} - ${item.name}`)
+        console.log(top_tracks)
 
         // Grab the audio player
         res = client.audioconnections.get(channel.guild.id)
