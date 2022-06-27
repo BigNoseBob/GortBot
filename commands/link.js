@@ -15,7 +15,7 @@ module.exports = {
         const port = 8000
         const url = user_authorization({
             scopes: [ 'user-read-private', 'user-read-email', 'user-top-read' ],
-            redirect_uri: `http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`,
+            redirect_uri: `http://18.224.209.251:${port}`,
             state: interaction.user.id,
         })
 
