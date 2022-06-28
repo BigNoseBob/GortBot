@@ -23,7 +23,7 @@ async function main() {
             let auth = await request_authorization({  
                 grant_type: 'authorization_code', 
                 code: data.code,
-                redirect_uri: `http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`,
+                redirect_uri: `http://18.224.209.251:${port}`,
             })
 
             console.log(auth)
@@ -43,7 +43,7 @@ async function main() {
     })
 
     server.listen(port)
-    console.log(`Listening on http://ec2-3-22-234-91.us-east-2.compute.amazonaws.com:${port}`)
+    console.log(`Listening on http://18.224.209.251:${port}`)
 
 }
 
