@@ -13,7 +13,7 @@ const url_endpoint = 'https://www.youtube.com/watch?v='
 
 async function search({ query, urls }) {
 
-    const url = `${endpoint}/search?part=snippet&type=video&q=${query}&key=${api_key}`
+    const url = encodeURI(`${endpoint}/search?part=snippet&type=video&q=${query}&key=${api_key}`)
     let res = await axios({ method: 'GET', url: url, responseType: 'json' }).catch(err => console.error(err))
 
     if (urls) {

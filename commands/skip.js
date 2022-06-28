@@ -27,7 +27,7 @@ module.exports = {
 
             // If the search wasn't immediate --> i.e. from a playlist
             if (!upnext.id) {
-                let res = await search({ query: upnext })
+                let res = await search({ query: escape(upnext) })
                 upnext = res.items[0]
             }
 

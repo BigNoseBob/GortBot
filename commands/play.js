@@ -48,7 +48,7 @@ async function queue_track({ query, queue, player, interaction, immediate, force
 
     if (!immediate) { queue.push(query); return }  // Just push the track if we're not gonna do anything with it
 
-    let data = await search({ query: query })
+    let data = await search({ query: escape(query) })
     if (data.items.length === 0) throw new Error('RalphError', { cause: 'results are **null**' })
 
     let url = `https://www.youtube.com/watch?v=${data.items[0].id.videoId}`
