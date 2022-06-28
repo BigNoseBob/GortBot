@@ -2,7 +2,7 @@
 // June 2022
 
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { user_top } = require('../spotify.js')
+const { user_top, refresh_token } = require('../spotify.js')
 const { enqueue } = require('./play.js')
 
 const fs = require('node:fs')
@@ -23,7 +23,20 @@ module.exports = {
         const access_token = user_data.access_token
 
         // Get the top songs from spotify
-        let top_data = await user_top(access_token, { type: 'tracks' })
+        let top_data
+        try {
+            top_data = await user_top(access_token, { type: 'tracks' })
+        } catch (err) {
+            // In this case we need to regenerate the access token
+            let data = await refresh_token(access_token)
+            fs.writeFileSync(`users/${interaction.user.id}.json`, JSON.stringify({ 
+                access_token: data.access_token,
+                refresh_token: data.refresh_token,
+            }))
+
+            top_data = await user_top(data.access_token, { type: 'tracks' })
+
+        }
         let top_tracks = top_data.items.map(item => `${item.artists[0].name} - ${item.name}`)
         console.log(top_tracks)
 
