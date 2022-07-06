@@ -9,7 +9,7 @@ module.exports = {
 
     data : new SlashCommandBuilder()
         .setName('join')
-        .setDescription('Pull Ralph into your voice channel'),
+        .setDescription('Pull bot into your voice channel'),
     async execute({ interaction, client, noreply }) {
 
         // set constants and grab the current voice channel user is in

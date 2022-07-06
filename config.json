@@ -17,6 +17,10 @@
     },
     "config_commands": [
         "prefix"
+    ],
+    "api_endpoints": [
+        "/gort/guilds",
+        "/gort/users"
     ]
     
 }

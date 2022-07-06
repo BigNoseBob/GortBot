@@ -6,12 +6,13 @@
 
 const DiscordJS = require('discord.js')
 const fs = require('fs')
-const { enumerate } = require('./util.js')
 const config = JSON.parse(fs.readFileSync('./config.json'))
+const { HTTP_server } = require('./http_server.js')
 
 const COMMAND_PREFIX = config.prefix
 const COMMAND_ALIASES = config.aliases
 const CONFIG_COMMANDS = config.config_commands
+const API_ENDPOINTS = config.api_endpoints
 
 async function login({ FLAGS }) {
     
@@ -30,9 +31,11 @@ async function login({ FLAGS }) {
 async function main() {
 
     const TIME = process.argv.includes('-t')
+    const SERVER = process.argv.includes('-s')
 
-    // Login and grab client
+    // Login and grab client and run the http server
     const client = await login({ FLAGS : process.argv.includes('-f') })
+    HTTP_server(client)
 
     // Put commands onto the client
     client.commands = new DiscordJS.Collection()
@@ -119,6 +122,8 @@ async function main() {
         guild.systemChannel.send(`:hammer: \`Config file created for guild ${guild.name}:${guild.id}\``)
 
     })
+
+
 
 }
 

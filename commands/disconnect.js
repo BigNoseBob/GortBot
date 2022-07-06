@@ -8,7 +8,7 @@ module.exports = {
 
     data : new SlashCommandBuilder()
         .setName('disconnect')
-        .setDescription('Pull Ralph out of a voice channel'),
+        .setDescription('Pull bot out of a voice channel'),
     async execute({ interaction, client }) {
 
         // set constants and grab the current voice channel user is in
