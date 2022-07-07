@@ -20,6 +20,17 @@ function load_endpoints(dir=__dirname + '/endpoints') {
 
 }
 
+function response_template({ status, code, data, message }) {
+
+    status = status || "success"
+    data = data || null
+    message = message || null
+    code = code || 200
+
+    return { status: status, message: message, data: data }
+
+}
+
 async function HTTP_server(client, port=4078) {
 
     // Load endpoint responses
@@ -28,27 +39,24 @@ async function HTTP_server(client, port=4078) {
     http.createServer(async (req, res) => {
 
         const endpoint = endpoints.get(API_ENDPOINTS[req.url])
+        let data;
         if(!endpoint) {
 
             res.writeHead(404, {
                 "Content-Type": 'text/json'
             })
-            res.end(JSON.stringify({
-                code: 404,
-                description: "Invalid endpoint",
-                response: {},
-                data: {}
-            }))
+            data = response_template({ status: "failure", code: 404, message: "Invalid API endpoint" })
 
         } else {
 
             res.writeHead(200, {
                 "Content-Type": 'text/json'
             })
-            let data = await endpoint.execute({ client })
-            res.end(JSON.stringify(data))
+            let response_obj = await endpoint.execute({ client })
+            data = response_template({ status: "success", code: 200, data: response_obj })
 
         }
+        res.end(JSON.stringify(data))
         
     }).listen(port)
     console.log(`HTTP server listening on http://localhost:${port}`)

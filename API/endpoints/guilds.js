@@ -10,7 +10,7 @@ module.exports = {
         description: "Returns all cached guilds"
     },
     async execute({ client }) {
-        return { cache: client.guilds.cache, size: client.users.guilds.size }
+        return { cache: client.guilds.cache, size: client.guilds.cache.size }
     }
 
 }
