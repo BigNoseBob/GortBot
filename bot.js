@@ -21,7 +21,7 @@ async function login({ FLAGS }) {
     // Create the client
     const client = new DiscordJS.Client({ intents: [1, 2, 128, 512, 4096] })    // Use -f to see all the flags
     await client.login(process.env.DISCORD_TOKEN)
-    console.log(`Successfully logged in as ${client.user.tag} with ID: ${client.user.id}`)
+    console.log(`Successfully logged in as \x1b[33m${client.user.tag}\x1b[0m with ID: \x1b[33m${client.user.id}\x1b[0m`)
     
     return client
 
@@ -48,7 +48,7 @@ async function main() {
         let cmd = require(`./commands/${file}`)
         client.commands.set(cmd.data.name, cmd)
     }
-    console.log('Loaded command registry...')
+    console.log(`Loaded \x1b[33m${client.commands.size}\x1b[0m commands`)
 
     const guild_configs = fs.readdirSync('./guilds').filter(file => file.endsWith('.json'))
     for (let file of guild_configs) {
