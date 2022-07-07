@@ -35,7 +35,7 @@ async function main() {
 
     // Login and grab client and run the http server
     const client = await login({ FLAGS : process.argv.includes('-f') })
-    HTTP_server(client)
+    if (SERVER) HTTP_server(client)
 
     // Put commands onto the client
     client.commands = new DiscordJS.Collection()

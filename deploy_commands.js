@@ -32,7 +32,7 @@ function sleep(ms) {
 async function delete_commands() {
 
 	const headers = { "Authorization": `Bot ${token}` }
-	const url = `https://discord.com/api/v10/applications/858698763585847317/commands`
+	const url = `https://discord.com/api/v10/applications/978404769750192149/commands`
 	let res = await axios({ method: 'GET', responseType: 'json', url: url, headers: headers }).catch(err => console.error(err))
 	let ids = res.data.map(item => item.id)
 
@@ -40,7 +40,7 @@ async function delete_commands() {
 	for (id of ids) {
 		console.log(i)
 		i++
-		await axios({ method: 'DELETE', responseType: 'json', url: `https://discord.com/api/v10/applications/858698763585847317/commands/${id}`, headers: headers }).catch(err => console.error(err))
+		await axios({ method: 'DELETE', responseType: 'json', url: `https://discord.com/api/v10/applications/978404769750192149/commands/${id}`, headers: headers }).catch(err => console.error(err))
 		await sleep(4000)
 	}
 	console.log('DONE')

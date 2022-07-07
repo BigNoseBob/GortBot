@@ -21,10 +21,9 @@ async function HTTP_server(client, port=4078) {
         } else {
             let data;
             if (req.url === '/gort/guilds') {
-                console.log(client.guilds.cache)
-                data = { size: client.guilds.cache.size }
+                data = { cache: client.guilds.cache, size: client.guilds.cache.size }
             } else if (req.url === '/gort/users') {
-                data = { size: client.users.cache.size }
+                data = { cache: client.users.cache, size: client.users.cache.size }
             }
             res.end(JSON.stringify(data))
         }
