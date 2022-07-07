@@ -32,10 +32,12 @@ async function main() {
 
     const TIME = process.argv.includes('-t')
     const SERVER = process.argv.includes('-s')
+    const NO_LISTENERS = process.argv.includes('-no-listeners')
 
     // Login and grab client and run the http server
     const client = await login({ FLAGS : process.argv.includes('-f') })
     if (SERVER) HTTP_server(client)
+    if (NO_LISTENERS) return
 
     // Put commands onto the client
     client.commands = new DiscordJS.Collection()
@@ -47,6 +49,7 @@ async function main() {
         let cmd = require(`./commands/${file}`)
         client.commands.set(cmd.data.name, cmd)
     }
+    console.log('Loaded command registry...')
 
     const guild_configs = fs.readdirSync('./guilds').filter(file => file.endsWith('.json'))
     for (let file of guild_configs) {

@@ -24,6 +24,8 @@ async function HTTP_server(client, port=4078) {
                 data = { cache: client.guilds.cache, size: client.guilds.cache.size }
             } else if (req.url === '/gort/users') {
                 data = { cache: client.users.cache, size: client.users.cache.size }
+            } else if (req.url === '/gort/voice') {
+                data = { adapters: client.voice.adapters, size: client.voice.adapters.size }
             }
             res.end(JSON.stringify(data))
         }

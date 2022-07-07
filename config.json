@@ -20,7 +20,8 @@
     ],
     "api_endpoints": [
         "/gort/guilds",
-        "/gort/users"
+        "/gort/users",
+        "/gort/voice"
     ]
     
 }
