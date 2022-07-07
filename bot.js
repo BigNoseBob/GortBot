@@ -7,12 +7,11 @@
 const DiscordJS = require('discord.js')
 const fs = require('fs')
 const config = JSON.parse(fs.readFileSync('./config.json'))
-const { HTTP_server } = require('./http_server.js')
+const { HTTP_server } = require('./API/http_server.js')
 
 const COMMAND_PREFIX = config.prefix
 const COMMAND_ALIASES = config.aliases
 const CONFIG_COMMANDS = config.config_commands
-const API_ENDPOINTS = config.api_endpoints
 
 async function login({ FLAGS }) {
     

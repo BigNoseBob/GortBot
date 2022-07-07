@@ -18,10 +18,10 @@
     "config_commands": [
         "prefix"
     ],
-    "api_endpoints": [
-        "/gort/guilds",
-        "/gort/users",
-        "/gort/voice"
-    ]
+    "api_endpoints": {
+        "/gort/guilds": "guilds",
+        "/gort/users": "users",
+        "/gort/voice": "voice"
+    }
     
 }

@@ -10,7 +10,6 @@ require('dotenv').config()
 
 const CLIENT_ID = process.env.spotify_client_id
 const CLIENT_SECRET = process.env.spotify_client_secret
-const REDIRECT_URI = 'http://localhost:8000'
 
 const headers = { 
     'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64')),
