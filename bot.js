@@ -43,6 +43,12 @@ async function main() {
     client.audioconnections = new DiscordJS.Collection()
     client.guildConfigs = new DiscordJS.Collection()
 
+    // Update the status
+    client.user.setActivity("HOT GARBAGE.", {
+        type: "LISTENING",
+        url: "https://oliverr.dev/gort.html"
+    });
+
     const command_files = fs.readdirSync('./commands').filter(file => file.endsWith('.js') && !file.startsWith('_'))
     for (let file of command_files) {
         let cmd = require(`./commands/${file}`)
