@@ -33,7 +33,7 @@ async function queue_playlist({ url, embed, interaction }) {
     let playlist_description = res.description || undefined
 
     embed = new MessageEmbed()
-        .setColor('#D22B2B')
+        .setColor('#edc92b')
         .setTitle(playlist_title)
         .setThumbnail(playlist_img_url)
         .setDescription(playlist_description + `\n${playlist_url}`)
@@ -63,7 +63,7 @@ async function queue_track({ query, queue, player, interaction, immediate, force
     let img_url = data.items[0].snippet.thumbnails.default.url
 
     let embed = new MessageEmbed()
-        .setColor('#D22B2B')
+        .setColor('#edc92b')
         .setTitle(decodeEntities(title))
         .setThumbnail(img_url)
         .setDescription(url)

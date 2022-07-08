@@ -28,7 +28,7 @@ module.exports = {
             let results = queue.slice(page_num * results_per_page, (page_num + 1) * results_per_page)
 
             // create the embed
-            let embed = new MessageEmbed().setColor('#D22B2B')
+            let embed = new MessageEmbed().setColor('#edc92b')
             let builder = ''
 
             for ([i, item] of enumerate(results)) {

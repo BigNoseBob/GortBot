@@ -37,7 +37,7 @@ module.exports = {
 
 
         let embed = new MessageEmbed()
-            .setColor('#D22B2B')
+            .setColor('#edc92b')
             .setTitle(':guitar: Now Playing - ' + decodeEntities(title))
             .setThumbnail(img_url)
             .setDescription(url + `\n${playback_duration_minutes}m ${playback_duration_seconds}s / ${duration}`)
