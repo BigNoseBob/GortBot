@@ -31,6 +31,15 @@ function response_template({ status, code, data, message }) {
 
 }
 
+const EXTENSIONS = {
+    '.js': 'text/javascript',
+    '.html': 'text/html',
+    '.ico': 'image/jpeg',
+    '.png': 'image/png',
+    '.jpeg': 'image/jpeg',
+    '.css': 'text/css',
+}
+
 async function HTTP_server(client, port=4078) {
 
     // Load endpoint responses
@@ -38,14 +47,34 @@ async function HTTP_server(client, port=4078) {
 
     http.createServer(async (req, res) => {
 
+        let url = req.url
         const endpoint = endpoints.get(API_ENDPOINTS[req.url])
         let data;
+
         if(!endpoint) {
 
-            res.writeHead(404, {
-                "Content-Type": 'text/json'
+            let extension = EXTENSIONS[url.substring(url.indexOf('.'))] || 'text/html'
+
+            if (!extension) {
+                res.writeHead(404, {
+                    "Content-Type": 'text/json'
+                })
+                data = response_template({ status: "failure", code: 404, message: "Invalid API endpoint" })    
+                res.end(JSON.stringify(data))
+                return
+            }
+
+            // If the call is just to the side itself
+            if (url === '/')
+                url = '/index.html'
+
+            res.writeHead(200, {
+                "Content-Type": extension
             })
-            data = response_template({ status: "failure", code: 404, message: "Invalid API endpoint" })
+            fs.readFile(__dirname + url, (err, data) => {
+                res.end(data)
+            })
+            return
 
         } else {
 

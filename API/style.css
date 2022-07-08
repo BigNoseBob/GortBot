@@ -1,0 +1,37 @@
+/* Oliver Rayner
+   June 2022 */
+
+.main { width: 600px; margin: 0 auto; }
+.left { margin: 0 0 0 auto; padding-top: 20px; padding-bottom: 20px; }
+.right { margin: 0 auto 0 0; padding-top: 20px; padding-bottom: 20px; }
+.navbar {
+    text-align: center; position: -webkit-sticky; position: sticky; top: 0; border-bottom: gray solid 2px; background-color: white; 
+    padding-top: 5px; padding-bottom: 5px;
+    }
+.navlink { 
+    text-decoration: none; 
+    color: inherit;
+    font-weight: bold;
+    /* display: inline-block; */
+}
+a.navlink:hover {
+    /* font-weight: bold; */
+    color: #1E90FF;
+}
+.input {
+    border: none;
+    border-color: transparent;
+    resize: none;
+    outline: none;
+    font-family: monospace;
+    animation: 1s blink_cursor step-end infinite;
+    /* caret-color: transparent; */
+}
+.fade-in {
+    animation: fadeIn 2s forwards;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
