@@ -7,8 +7,8 @@ const { MessageEmbed } = require('discord.js')
 module.exports = {
 
     data : new SlashCommandBuilder()
-        .setName('coffee')
-        .setDescription('If you enjoy my work...'),
+        .setName('buymeacoffee')
+        .setDescription('Support ya mans'),
     async execute({ interaction }) {
 
         const url = 'https://www.buymeacoffee.com/oliverr'
