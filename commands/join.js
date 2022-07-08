@@ -95,6 +95,7 @@ module.exports = {
                 // Seems to be a real disconnect which SHOULDN'T be recovered from
                 clearTimeout(timeout)
                 connection.destroy();
+                client.audioconnections.delete(channel.guild.id)
             }
         });
 
