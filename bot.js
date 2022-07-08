@@ -12,6 +12,21 @@ const { HTTP_server } = require('./API/http_server.js')
 const COMMAND_PREFIX = config.prefix
 const COMMAND_ALIASES = config.aliases
 const CONFIG_COMMANDS = config.config_commands
+const STATUS_UPDATES = config.status_updates
+
+async function random_status_updates(client, ms=10000) {
+
+    const sleep = () => new Promise(resolve => setTimeout(resolve, ms));
+
+    while (true) {
+        for (let i = 0; i < STATUS_UPDATES.length; i++) {
+            let status = STATUS_UPDATES[i]
+            client.user.setActivity(status.name, status.options)
+            await sleep()
+        }
+    }
+
+}
 
 async function login({ FLAGS }) {
     
@@ -36,7 +51,6 @@ async function main() {
     // Login and grab client and run the http server
     const client = await login({ FLAGS : process.argv.includes('-f') })
     if (SERVER) HTTP_server(client)
-    if (NO_LISTENERS) return
 
     // Put commands onto the client
     client.commands = new DiscordJS.Collection()
@@ -44,10 +58,7 @@ async function main() {
     client.guildConfigs = new DiscordJS.Collection()
 
     // Update the status
-    client.user.setActivity("HOT GARBAGE.", {
-        type: "LISTENING",
-        url: "https://oliverr.dev/gort.html"
-    });
+    random_status_updates(client)
 
     const command_files = fs.readdirSync('./commands').filter(file => file.endsWith('.js') && !file.startsWith('_'))
     for (let file of command_files) {
@@ -62,6 +73,8 @@ async function main() {
         client.guildConfigs.set(file.substring(0, file.length - 5), config)
     }
 
+    // Add interaction listeners
+    if (NO_LISTENERS) { console.log('Activating without \x1b[33mlisteners\x1b[0m'); return; }
     client.on('interactionCreate', async interaction => {
 
         if (!interaction.isCommand()) return
@@ -130,8 +143,6 @@ async function main() {
         guild.systemChannel.send(`:hammer: \`Config file created for guild ${guild.name}:${guild.id}\``)
 
     })
-
-
 
 }
 

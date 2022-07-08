@@ -22,6 +22,22 @@
         "/gort/guilds": "guilds",
         "/gort/users": "users",
         "/gort/voice": "voice"
-    }
+    },
+    "status_updates": [
+        {
+            "name": "HOT GARBAGE",
+            "options": {
+                "type": "STREAMING",
+                "url": "https://oliverr.dev"
+            }
+        },
+        {
+            "name": "/coffee",
+            "options": {
+                "type": "LISTENING",
+                "url": "https://oliverr.dev"
+            }
+        }
+    ]
     
 }
