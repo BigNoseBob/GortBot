@@ -28,7 +28,7 @@ module.exports = {
             top_data = await user_top(access_token, { type: 'tracks' })
         } catch (err) {
             // In this case we need to regenerate the access token
-            let data = await refresh_token(access_token)
+            let data = await refresh_token(user_data.refresh_token)
             fs.writeFileSync(`users/${interaction.user.id}.json`, JSON.stringify({ 
                 access_token: data.access_token,
                 refresh_token: data.refresh_token,
@@ -38,7 +38,6 @@ module.exports = {
 
         }
         let top_tracks = top_data.items.map(item => `${item.artists[0].name} - ${item.name}`)
-        console.log(top_tracks)
 
         // Grab the audio player
         res = client.audioconnections.get(channel.guild.id)
