@@ -1,0 +1,43 @@
+{
+    "phrases": {
+        "disconnect":   ":dash: outta here **bitch**.",
+        "skip":         ":track_next: Skipping...",
+        "join":         "placeholder"
+    },
+    "prefix":           "!!",
+    "aliases": {
+        "p":            "play",
+        "np":           "nowplaying",
+        "j":            "join",
+        "dc":           "disconnect",
+        "s":            "skip",
+        "q":            "queue",
+        "c":            "clear",
+        "fp":           "forceplay"
+    },
+    "config_commands": [
+        "prefix"
+    ],
+    "api_endpoints": {
+        "/gort/guilds": "guilds",
+        "/gort/users": "users",
+        "/gort/voice": "voice"
+    },
+    "status_updates": [
+        {
+            "name": "HOT GARBAGE",
+            "options": {
+                "type": "STREAMING",
+                "url": "https://oliverr.dev"
+            }
+        },
+        {
+            "name": "/buymeacoffee",
+            "options": {
+                "type": "LISTENING",
+                "url": "https://oliverr.dev"
+            }
+        }
+    ]
+    
+}
