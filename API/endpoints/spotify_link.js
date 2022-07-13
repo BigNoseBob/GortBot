@@ -24,10 +24,8 @@ module.exports = {
             code: data.code,
             redirect_uri: 'https://api.oliverr.dev/gort/spotify/link',
         })
-        console.log(response)
 
         const json = JSON.stringify(response)
-
         fs.writeFile(`users/${data.state}.json`, json, () => {
             
         })
