@@ -48,7 +48,7 @@ async function HTTP_server(client, port=4078) {
     http.createServer(async (req, res) => {
 
         let url = req.url, data, headers = req.headers
-        const endpoint = endpoints.get(API_ENDPOINTS[req.url])
+        const endpoint = endpoints.get(API_ENDPOINTS[req.url.split('?')[0]])
 
         if(!endpoint) {
 
