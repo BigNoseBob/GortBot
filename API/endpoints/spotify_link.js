@@ -28,7 +28,9 @@ module.exports = {
 
         const json = JSON.stringify(response)
 
-        fs.writeFile(`users/${data.state}.json`, json)
+        fs.writeFile(`users/${data.state}.json`, json, () => {
+            
+        })
 
     }
 
