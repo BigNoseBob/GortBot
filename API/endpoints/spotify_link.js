@@ -16,7 +16,7 @@ module.exports = {
     },
     async execute({ url, res }) {
         
-        let data = querystring.parse(url)
+        let data = querystring.parse(url.split('?')[1])
         console.log(data)
 
         let response = await request_authorization({ 
