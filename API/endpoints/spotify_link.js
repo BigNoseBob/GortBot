@@ -5,6 +5,8 @@
 
 const fs = require('node:fs')
 const querystring = require('node:querystring')
+const axios = require('axios')
+const { request_authorization } = require('../../spotify.js')
 
 module.exports = {
 
@@ -14,9 +16,17 @@ module.exports = {
     },
     async execute({ url, res }) {
         
-        let res = querystring.parse(url)
-        const json = JSON.stringify(res)
-        console.log(res)
+        let data = querystring.parse(url)
+        console.log(data)
+
+        let response = await request_authorization({ 
+            grant_type: 'authorization_code', 
+            code: data.code,
+            redirect_uri: 'https://api.oliverr.dev/gort/spotify/link',
+        })
+        console.log(response)
+
+        const json = JSON.stringify(response)
 
         fs.writeFile(`users/${data.state}.json`, json)
 
