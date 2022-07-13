@@ -12,10 +12,9 @@ module.exports = {
         .setDescription('Link your Spotify account'),
     async execute({ interaction, client }) {
 
-        const port = 8000
         const url = user_authorization({
             scopes: [ 'user-read-private', 'user-read-email', 'user-top-read' ],
-            redirect_uri: `http://18.224.209.251:${port}`,
+            redirect_uri: `https://api.oliverr.dev/gort/spotify/link`,
             state: interaction.user.id,
         })
 

@@ -21,7 +21,8 @@
     "api_endpoints": {
         "/gort/guilds": "guilds",
         "/gort/users": "users",
-        "/gort/voice": "voice"
+        "/gort/voice": "voice",
+        "/gort/spotify/link": "spotify_link"
     },
     "status_updates": [
         {

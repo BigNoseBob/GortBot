@@ -47,9 +47,8 @@ async function HTTP_server(client, port=4078) {
 
     http.createServer(async (req, res) => {
 
-        let url = req.url
+        let url = req.url, data, headers = req.headers
         const endpoint = endpoints.get(API_ENDPOINTS[req.url])
-        let data;
 
         if(!endpoint) {
 
@@ -81,7 +80,7 @@ async function HTTP_server(client, port=4078) {
             res.writeHead(200, {
                 "Content-Type": 'text/json'
             })
-            let response_obj = await endpoint.execute({ client })
+            let response_obj = await endpoint.execute({ client, url, headers, req, res })
             data = response_template({ status: "success", code: 200, data: response_obj })
 
         }
