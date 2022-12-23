@@ -6,8 +6,8 @@
 
 const DiscordJS = require('discord.js')
 const fs = require('fs')
-const config = JSON.parse(fs.readFileSync('./config.json'))
-const { HTTP_server } = require('./API/http_server.js')
+const config = JSON.parse(fs.readFileSync(__dirname + '/config.json'))
+// const { HTTP_server } = require(__dirname + '/API/http_server.js')
 
 const COMMAND_PREFIX = config.prefix
 const COMMAND_ALIASES = config.aliases
@@ -30,7 +30,7 @@ async function random_status_updates(client, ms=10000) {
 
 async function login({ FLAGS }) {
     
-    require('dotenv').config()
+    require('dotenv').config({ path: __dirname + '/.env' })
     if (FLAGS) console.log(DiscordJS.Intents.FLAGS)
 
     // Create the client
@@ -50,7 +50,7 @@ async function main() {
 
     // Login and grab client and run the http server
     const client = await login({ FLAGS : process.argv.includes('-f') })
-    if (SERVER) HTTP_server(client)
+    // if (SERVER) HTTP_server(client)
 
     // Put commands onto the client
     client.commands = new DiscordJS.Collection()
@@ -60,16 +60,16 @@ async function main() {
     // Update the status
     random_status_updates(client)
 
-    const command_files = fs.readdirSync('./commands').filter(file => file.endsWith('.js') && !file.startsWith('_'))
+    const command_files = fs.readdirSync(__dirname + '/commands').filter(file => file.endsWith('.js') && !file.startsWith('_'))
     for (let file of command_files) {
-        let cmd = require(`./commands/${file}`)
+        let cmd = require(__dirname + `/commands/${file}`)
         client.commands.set(cmd.data.name, cmd)
     }
     console.log(`Loaded \x1b[33m${client.commands.size}\x1b[0m commands`)
 
-    const guild_configs = fs.readdirSync('./guilds').filter(file => file.endsWith('.json'))
+    const guild_configs = fs.readdirSync(__dirname + '/guilds').filter(file => file.endsWith('.json'))
     for (let file of guild_configs) {
-        let config = JSON.parse(fs.readFileSync(`./guilds/${file}`))
+        let config = JSON.parse(fs.readFileSync(__dirname + `/guilds/${file}`))
         client.guildConfigs.set(file.substring(0, file.length - 5), config)
     }
 
